@@ -1,0 +1,27 @@
+<view class="share">
+  <view class="share__title">Wxml:</view>
+  <view class="share__canvas share__canvas1">
+    <view class="share__canvas1-text draw_canvas" data-type="text" data-text="这是一段无边距文字">
+      这是一段无边距文字
+    </view>
+    <view class="share__canvas1-text-2 draw_canvas" data-type="text" data-text="这是一段margin文字">
+      这是一段margin文字
+    </view>
+    <view class="share__canvas1-text-3 draw_canvas" data-type="text" data-text="这是一段padding文字">
+      这是一段padding文字
+    </view>
+    <view class="share__canvas1-text-4 draw_canvas" data-type="text" data-text="这是一段居中有背景文字">
+      这是一段居中有背景文字
+    </view>
+    <view class="share__canvas1-text-5 draw_canvas" data-type="text" data-text="这是一段背景文字" data-background="rgba(255, 0, 0, 0.4)" data-padding="0 0 0 0">
+      这是一段背景文字
+    </view>
+  </view>
+  <view class="share__title">Canvas:</view>
+  <canvas canvas-id="canvas1" class="share__canvas"></canvas>
+  <view class="share__title">Result:</view>
+  <block wx:for="{{ imgs }}" wx:for-item="img" wx:key="img" wx:for-index="idx">
+    <image src="{{ img }}" class="share__result-img {{ idx === 3 || idx === 5 ? 'share__result-img-4' : ''}}" mode="widthFix"></image>
+    <button data-index="{{ idx }}" catchtap="saveImage" class="share__button">保存图片</button>
+  </block>
+</view>
