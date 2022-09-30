@@ -1,7 +1,8 @@
-import { CONFIG_SET } from "./config";
+import { CACHE_INFO } from "./config";
 import { transferBoxShadow, transferBorder } from "./utils";
 
-export const drawBoxShadow = (ctx, boxShadow, cb) => {
+export const drawBoxShadow = (boxShadow, cb) => {
+  const { ctx } = CACHE_INFO;
   boxShadow = transferBoxShadow(boxShadow);
   if (boxShadow) {
     ctx.setShadow(
@@ -16,7 +17,8 @@ export const drawBoxShadow = (ctx, boxShadow, cb) => {
   cb && cb(boxShadow || {});
 };
 
-export const setFill = (fill, ctx, cb) => {
+export const setFill = (fill, cb) => {
+  const { ctx } = CACHE_INFO;
   if (typeof fill === "string") {
     ctx.setFillStyle(fill);
   } else {
@@ -30,12 +32,12 @@ export const setFill = (fill, ctx, cb) => {
   cb && cb();
 };
 
-export const drawBorder = (border, style, ctx, cb) => {
-  const { zoom } = CONFIG_SET();
+export const drawBorder = (border, style, cb) => {
+  const { ctx, zoom } = CACHE_INFO;
   border = transferBorder(border);
   if (border && border.width) {
     // 空白阴影，清空掉边框的阴影
-    drawBoxShadow(ctx);
+    drawBoxShadow();
     if (border) {
       ctx.setLineWidth(border.width * zoom);
       if (border.style === "dashed") {
@@ -66,7 +68,8 @@ export const transferPadding = (padding = "0 0 0 0") => {
   return padding;
 };
 
-export const measureWidth = (ctx, text, font) => {
+export const measureWidth = (text, font) => {
+  const { ctx } = CACHE_INFO;
   if (font) {
     ctx.font = font;
   }
@@ -75,7 +78,7 @@ export const measureWidth = (ctx, text, font) => {
 };
 
 export const getLineHeight = style => {
-  const { zoom } = CONFIG_SET();
+  const { zoom } = CACHE_INFO.options;
   let lineHeight;
   if (!isNaN(style.lineHeight) && style.lineHeight > style.fontSize) {
     lineHeight = style.lineHeight;
@@ -92,7 +95,7 @@ export const getLineHeight = style => {
  * @param {*} style
  */
 export const resetPositionX = (item, style) => {
-  const { width, zoom, translateX } = CONFIG_SET();
+  const { width, translateX, zoom } = CACHE_INFO.options;
   let x = 0;
   // 通过wxml获取的不需要重置坐标
   if (item.x < 0 && item.type) {
@@ -114,7 +117,7 @@ export const resetPositionX = (item, style) => {
  * @param {*} style
  */
 export const resetPositionY = (item, style, textHeight) => {
-  const { height, zoom, translateY } = CONFIG_SET();
+  const { height, translateY, zoom } = CACHE_INFO.options;
   let y = 0;
   if (item.y < 0) {
     y =
@@ -136,7 +139,7 @@ export const resetPositionY = (item, style, textHeight) => {
  * @param {*} textWidth
  */
 export const resetTextPositionX = (item, style, textWidth, width) => {
-  const { translateX } = CONFIG_SET();
+  const { translateX } = CACHE_INFO.options;
   let textAlign = style.textAlign || "left";
   let x = item.x;
   if (textAlign === "center") {
@@ -155,7 +158,7 @@ export const resetTextPositionX = (item, style, textWidth, width) => {
  * @param {*} textWidth
  */
 export const resetTextPositionY = (item, style, lineNum = 0) => {
-  const { zoom, translateY } = CONFIG_SET();
+  const { zoom, translateY } = CACHE_INFO.options;
   let lineHeight = getLineHeight(style);
   let fontSize = Math.ceil((style.fontSize || 14) * zoom);
 

@@ -6,22 +6,23 @@ import {
   transferPadding,
   measureWidth,
 } from "./baseFun";
-import { COMPUT_STYLE, CONFIG_SET } from "./config";
+import { COMPUT_STYLE, CACHE_INFO } from "./config";
 import drawText from "./draw/text";
 
-export const drawRectToCanvas = async (x, y, ctx, width, height, style) => {
+export const drawRectToCanvas = (x, y, width, height, style) => {
   let { fill, border, boxShadow } = style;
+  const { ctx } = CACHE_INFO;
   ctx.save();
-  drawBoxShadow(ctx, boxShadow, shadow => {
+  drawBoxShadow(boxShadow, shadow => {
     // 真机上填充渐变色时，没有阴影，先画个相等大小的纯色矩形来实现阴影
     if (fill && typeof fill !== "string") {
       ctx.setFillStyle(shadow.color || "#ffffff");
       ctx.fillRect(x, y, width, height);
     }
   });
-  setFill(fill, ctx);
+  setFill(fill);
   ctx.fillRect(x, y, width, height);
-  drawBorder(border, style, ctx, calBorder => {
+  drawBorder(border, style, calBorder => {
     const fixBorder = calBorder.width;
     ctx.strokeRect(
       x - fixBorder / 2,
@@ -35,17 +36,19 @@ export const drawRectToCanvas = async (x, y, ctx, width, height, style) => {
   ctx.restore();
 };
 
-export const setBaseInfo = ctx => {
-  const { background, font, width, height } = CONFIG_SET();
+export const setBaseInfo = () => {
+  const { ctx, options } = CACHE_INFO;
+  const { background, font, width, height } = options;
   const style = { fill: background };
   ctx.font = font;
   ctx.setTextBaseline("top");
   ctx.setStrokeStyle("white");
-  drawRectToCanvas(0, 0, ctx, width, height, style);
+  drawRectToCanvas(0, 0, width, height, style);
 };
 
 export const getWxml = item => {
-  const { obj, width, zoom } = CONFIG_SET();
+  const { options } = CACHE_INFO;
+  const { obj, width, zoom } = options;
   let query = obj ? wx.createSelectorQuery().in(obj) : wx.createSelectorQuery();
   let p1 = new Promise(resolve => {
     let once;
@@ -109,7 +112,7 @@ export const sortListByTop = list => {
 };
 
 export const transferWxmlStyle = (sub, item, limitLeft, limitTop) => {
-  const { zoom } = CONFIG_SET();
+  const { zoom } = CACHE_INFO;
 
   let leftFix = +sub.dataset.left || 0;
   let topFix = +sub.dataset.top || 0;
@@ -132,7 +135,7 @@ export const transferWxmlStyle = (sub, item, limitLeft, limitTop) => {
   return sub;
 };
 
-export const drawWxmlText = (ctx, sub, resolve, reject) => {
+export const drawWxmlText = (sub, resolve, reject) => {
   let text = sub.dataset.text || "";
   if (sub.dataset.maxlength && text.length > sub.dataset.maxlength) {
     text = text.substring(0, sub.dataset.maxlength) + "...";
@@ -150,10 +153,10 @@ export const drawWxmlText = (ctx, sub, resolve, reject) => {
   if (sub.dataset.background) {
     sub.background = sub.dataset.background;
   }
-  drawText(ctx, textData, sub, resolve, reject, "text", "wxml");
+  drawText(textData, sub, resolve, reject, "text", "wxml");
 };
 
-export const drawWxmlBlock = (ctx, item, sorted, all, results) => {
+export const drawWxmlBlock = (item, sorted, all, results) => {
   // 用来限定位置范围，取相对位置
   let limitLeft = results ? results.left : 0;
   let limitTop = results ? results.top : 0;
@@ -168,7 +171,7 @@ export const drawWxmlBlock = (ctx, item, sorted, all, results) => {
         sub = transferWxmlStyle(sub, item, limitLeft, limitTop);
         let type = sub.dataset.type;
         if (type === "text") {
-          drawWxmlText(ctx, sub, resolve, reject);
+          drawWxmlText(sub, resolve, reject);
         }
       });
     });
@@ -176,7 +179,7 @@ export const drawWxmlBlock = (ctx, item, sorted, all, results) => {
   return all;
 };
 
-export const drawWxmlInlineText = (ctx, sub, leftOffset = 0, maxWidth) => {
+export const drawWxmlInlineText = (sub, leftOffset = 0, maxWidth) => {
   let text = sub.dataset.text || "";
   if (sub.dataset.maxlength && text.length > sub.dataset.maxlength) {
     text = text.substring(0, sub.dataset.maxlength) + "...";
@@ -200,10 +203,10 @@ export const drawWxmlInlineText = (ctx, sub, leftOffset = 0, maxWidth) => {
   if (sub.dataset.background) {
     sub.background = sub.dataset.background;
   }
-  return drawText(ctx, textData, sub, null, null, "inline-text", "wxml");
+  return drawText(textData, sub, null, null, "inline-text", "wxml");
 };
 
-export const drawWxmlInline = (ctx, item, sorted, all, results) => {
+export const drawWxmlInline = (item, sorted, all, results) => {
   let topOffset = 0;
   let leftOffset = 0;
   let lastTop = 0;
@@ -262,7 +265,7 @@ export const drawWxmlInline = (ctx, item, sorted, all, results) => {
         sub = transferWxmlStyle(sub, item, limitLeft, limitTop);
         let type = sub.dataset.type;
         if (type === "inline-text") {
-          let drawRes = drawWxmlInlineText(ctx, sub, leftOffset, maxWidth);
+          let drawRes = drawWxmlInlineText(sub, leftOffset, maxWidth);
           leftOffset = drawRes.leftOffset;
           topOffset = drawRes.topOffset;
         }
@@ -275,7 +278,7 @@ export const drawWxmlInline = (ctx, item, sorted, all, results) => {
   return all;
 };
 
-export const drawTextBackgroud = (ctx, item, style, textWidth, textHeight) => {
+export const drawTextBackgroud = (item, style, textWidth, textHeight) => {
   if (!style.width) return;
   let width = style.width || textWidth;
   let height = style.height || textHeight;
@@ -286,7 +289,7 @@ export const drawTextBackgroud = (ctx, item, style, textWidth, textHeight) => {
   style.padding = style.padding || [0, 0, 0, 0];
   width += (style.padding[1] || 0) + (style.padding[3] || 0);
   height += (style.padding[0] || 0) + (style.padding[2] || 0);
-  drawRectToCanvas(item.x, item.y, ctx, width, height, rectStyle);
+  drawRectToCanvas(item.x, item.y, width, height, rectStyle);
 };
 
 /**
@@ -307,13 +310,13 @@ export const getTextSingleLine = (
   let offset = 0;
   let endIndex = currentIndex + singleLength + offset;
   let single = text.substring(currentIndex, endIndex);
-  let singleWidth = measureWidth(ctx, single);
+  let singleWidth = measureWidth(single);
 
   while (Math.round(widthOffset + singleWidth) > width) {
     offset--;
     endIndex = currentIndex + singleLength + offset;
     single = text.substring(currentIndex, endIndex);
-    singleWidth = measureWidth(ctx, single);
+    singleWidth = measureWidth(single);
   }
 
   return {

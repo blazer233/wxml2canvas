@@ -9,13 +9,14 @@ import {
   resetTextPositionY,
   drawBoxShadow,
 } from "../baseFun";
-import { CONFIG_SET } from "../config";
+import { CACHE_INFO } from "../config";
 import { drawTextBackgroud, getTextSingleLine } from "../tools";
 
-export default (ctx, item, style, resolve, reject, type) => {
+export default (item, style, resolve, reject, type) => {
+  const { ctx } = CACHE_INFO;
   let leftOffset = 0;
   let topOffset = 0;
-  const { zoom } = CONFIG_SET();
+  const { zoom } = CACHE_INFO;
   try {
     style.fontSize = cNum(style.fontSize);
     let fontSize = Math.ceil((style.fontSize || 14) * zoom);
@@ -26,7 +27,7 @@ export default (ctx, item, style, resolve, reject, type) => {
     ctx.setFillStyle(style.color || "#454545");
     console.log(1);
     let text = item.text || "";
-    let textWidth = Math.floor(measureWidth(ctx, text, style.font || ctx.font));
+    let textWidth = Math.floor(measureWidth(text, style.font || ctx.font));
     let lineHeight = getLineHeight(style);
     let textHeight =
       Math.ceil(textWidth / (style.width || textWidth)) * lineHeight;
@@ -40,9 +41,9 @@ export default (ctx, item, style, resolve, reject, type) => {
     item.x = resetPositionX(item, style);
     item.y = resetPositionY(item, style, textHeight);
     console.log(2);
-    drawBoxShadow(ctx, style.boxShadow);
+    drawBoxShadow(style.boxShadow);
     if (style.background || style.border) {
-      drawTextBackgroud(ctx, item, style, textWidth, textHeight);
+      drawTextBackgroud(item, style, textWidth, textHeight);
     }
 
     // 行内文本
@@ -58,7 +59,7 @@ export default (ctx, item, style, resolve, reject, type) => {
           endIndex: currentIndex,
           single,
           singleWidth,
-        } = getTextSingleLine(ctx, text, width, singleLength, 0, widthOffset);
+        } = getTextSingleLine(text, width, singleLength, 0, widthOffset);
         x = resetTextPositionX(item, style, singleWidth);
         y = resetTextPositionY(item, style);
         ctx.fillText(single, x, y);
@@ -69,11 +70,10 @@ export default (ctx, item, style, resolve, reject, type) => {
         text = text.substring(currentIndex, text.length);
         currentIndex = 0;
         lineNum = Math.max(Math.floor(textWidth / width), 1);
-        textWidth = Math.floor(measureWidth(ctx, text, style.font || ctx.font));
+        textWidth = Math.floor(measureWidth(text, style.font || ctx.font));
         item.x = item.originX; // 还原换行后的x
         for (let i = 0; i < lineNum; i++) {
           let { endIndex, single, singleWidth } = getTextSingleLine(
-            ctx,
             text,
             width,
             singleLength,
@@ -92,7 +92,7 @@ export default (ctx, item, style, resolve, reject, type) => {
         }
 
         let last = text.substring(currentIndex, length);
-        let lastWidth = measureWidth(ctx, last);
+        let lastWidth = measureWidth(last);
 
         if (last) {
           x = resetTextPositionX(item, style, lastWidth, width);
@@ -123,7 +123,6 @@ export default (ctx, item, style, resolve, reject, type) => {
 
         for (let i = 0; i < lineNum; i++) {
           let { endIndex, single, singleWidth } = getTextSingleLine(
-            ctx,
             text,
             width,
             singleLength,
@@ -137,10 +136,9 @@ export default (ctx, item, style, resolve, reject, type) => {
 
         // 换行后剩余的文字，超过一行则截断增加省略号
         let last = text.substring(currentIndex, length);
-        let lastWidth = measureWidth(ctx, last);
+        let lastWidth = measureWidth(last);
         if (lastWidth > width) {
           let { single, singleWidth } = getTextSingleLine(
-            ctx,
             last,
             width,
             singleLength

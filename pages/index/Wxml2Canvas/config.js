@@ -1,10 +1,10 @@
-let info;
 const device = (wx.getSystemInfoSync && wx.getSystemInfoSync()) || {};
 const destzoom = 3;
+
 export const zoom = device.windowWidth / 375;
-export const CONFIG_SET = (config = {}) => {
-  if (info) return info;
-  info = {
+export const CACHE_INFO = {};
+export const GET_INIT = (config = {}) => {
+  const info = {
     zoom,
     ...config,
     width: config.width * zoom,
@@ -16,7 +16,10 @@ export const CONFIG_SET = (config = {}) => {
     background: config.background || "#ffffff",
     font: config.font || "14px PingFang SC",
   };
-  return info;
+  CACHE_INFO.options = info;
+  CACHE_INFO.zoom = zoom;
+  CACHE_INFO.ctx = wx.createCanvasContext(info.element, info.obj);
+  return CACHE_INFO.ctx;
 };
 
 export const COMPUT_STYLE = [
