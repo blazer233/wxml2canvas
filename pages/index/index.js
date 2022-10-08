@@ -5,7 +5,10 @@ Page({
   },
 
   onLoad() {
-    wxml2Canvas({
+    this.init();
+  },
+  async init() {
+    await wxml2Canvas({
       width: 340,
       height: 210,
       element: "canvas1",
@@ -21,7 +24,6 @@ Page({
       ],
     });
   },
-
   saveImage(evt) {
     let index = evt.target.dataset.index;
     wx.saveImageToPhotosAlbum({

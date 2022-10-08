@@ -156,8 +156,8 @@ export const drawWxmlText = (sub, resolve, reject) => {
   drawText(textData, sub, resolve, reject, "text", "wxml");
 };
 
+// 用来限定位置范围，取相对位置
 export const drawWxmlBlock = (item, sorted, all, results) => {
-  // 用来限定位置范围，取相对位置
   let limitLeft = results ? results.left : 0;
   let limitTop = results ? results.top : 0;
   Object.keys(sorted).forEach(top => {
@@ -273,7 +273,6 @@ export const drawWxmlInline = (item, sorted, all, results) => {
     });
     resolve();
   });
-
   all.push(p);
   return all;
 };

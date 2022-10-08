@@ -8,12 +8,11 @@ import {
 } from "./tools.js";
 
 export default config => {
-  GET_INIT(config);
-  setBaseInfo();
-  let index = 0;
-  let cacheAll = [];
-  config.list.forEach(item => {
-    cacheAll[index] = new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    GET_INIT(config);
+    setBaseInfo();
+    for (let i = 0; i < config.list.length; i++) {
+      const item = config.list[i];
       let all = [];
       const [base, target] = await getWxml(item);
       const sorted = sortListByTop(base);
@@ -21,7 +20,6 @@ export default config => {
       all = drawWxmlBlock(item, sorted, all, target);
       all = drawWxmlInline(item, sorted, all, target);
       Promise.all(all).then(resolve).catch(reject);
-    });
-    index += 1;
+    }
   });
 };
