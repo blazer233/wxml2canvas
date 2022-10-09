@@ -37,3 +37,9 @@ export function transferBorder(border = "") {
     return obj;
   }
 }
+
+export function calTxt(style, fontSize) {
+  return `${style.fontWeight ? style.fontWeight : "normal"} ${fontSize}px ${
+    style.fontFamily || "PingFang SC"
+  }`;
+}

@@ -11,15 +11,13 @@ export default config => {
   return new Promise(async (resolve, reject) => {
     GET_INIT(config);
     setBaseInfo();
-    for (let i = 0; i < config.list.length; i++) {
-      const item = config.list[i];
-      let all = [];
-      const [base, target] = await getWxml(item);
-      const sorted = sortListByTop(base);
-      // 上 -> 下
-      all = drawWxmlBlock(item, sorted, all, target);
-      all = drawWxmlInline(item, sorted, all, target);
-      Promise.all(all).then(resolve).catch(reject);
-    }
+    const exec = config.options;
+    const [base, target] = await getWxml(exec);
+    const [block, inline] = sortListByTop(base);
+    const result = [
+      ...drawWxmlBlock(exec, block, target),
+      drawWxmlInline(exec, inline, target),
+    ];
+    Promise.all(result).then(resolve).catch(reject);
   });
 };

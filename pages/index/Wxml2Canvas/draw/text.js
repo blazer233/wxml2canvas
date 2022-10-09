@@ -11,19 +11,17 @@ import {
 } from "../baseFun";
 import { CACHE_INFO } from "../config";
 import { drawTextBackgroud, getTextSingleLine } from "../tools";
+import { calTxt } from "../utils";
 
-export default (item, style, resolve, reject, type) => {
-  const { ctx } = CACHE_INFO;
+export default (item, style, resolve, reject, type = "text") => {
+  const { ctx, zoom } = CACHE_INFO;
   let leftOffset = 0;
   let topOffset = 0;
-  const { zoom } = CACHE_INFO;
   try {
     style.fontSize = cNum(style.fontSize);
-    let fontSize = Math.ceil((style.fontSize || 14) * zoom);
+    const fontSize = Math.ceil((style.fontSize || 14) * zoom);
     ctx.setTextBaseline("top");
-    ctx.font = `${
-      style.fontWeight ? style.fontWeight : "normal"
-    } ${fontSize}px ${style.fontFamily || "PingFang SC"}`;
+    ctx.font = calTxt(style, fontSize);
     ctx.setFillStyle(style.color || "#454545");
     console.log(1);
     let text = item.text || "";
@@ -167,6 +165,6 @@ export default (item, style, resolve, reject, type) => {
       };
     }
   } catch (e) {
-    reject && reject({ errcode: 1004, errmsg: "drawText error", e: e });
+    reject && reject({ errcode: 1004, errmsg: "drawText error", e });
   }
 };
