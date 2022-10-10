@@ -17,8 +17,6 @@ Page({
         type: "wxml",
         class: ".draw_canvas",
         limit: ".share__canvas1",
-        x: 0,
-        y: 0,
       },
     });
     wx.canvasToTempFilePath({
