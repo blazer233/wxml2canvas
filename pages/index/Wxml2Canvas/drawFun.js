@@ -1,21 +1,5 @@
 import { CACHE_INFO } from "./config";
-import { transferBoxShadow, transferBorder } from "./utils";
-
-export const drawBoxShadow = (boxShadow, cb) => {
-  const { ctx } = CACHE_INFO;
-  boxShadow = transferBoxShadow(boxShadow);
-  if (boxShadow) {
-    ctx.setShadow(
-      boxShadow.offsetX,
-      boxShadow.offsetY,
-      boxShadow.blur,
-      boxShadow.color
-    );
-  } else {
-    ctx.setShadow(0, 0, 0, "#ffffff");
-  }
-  cb && cb(boxShadow || {});
-};
+import { transferBorder, calTxt, cNum, getLineHeight } from "./utils";
 
 export const setFill = (fill, cb) => {
   const { ctx } = CACHE_INFO;
@@ -37,7 +21,7 @@ export const drawBorder = (border, style, cb) => {
   border = transferBorder(border);
   if (border && border.width) {
     // 空白阴影，清空掉边框的阴影
-    drawBoxShadow();
+    ctx.setShadow(0, 0, 0, "#ffffff");
     if (border) {
       ctx.setLineWidth(border.width * zoom);
       if (border.style === "dashed") {
@@ -52,43 +36,15 @@ export const drawBorder = (border, style, cb) => {
   }
 };
 
-export const cNum = number => {
-  return isNaN(number) ? +(number || "").replace("px", "") : number;
-};
-
-/**
- * 内边距，依次为上右下左
- * @param {*} padding
- */
-export const transferPadding = (padding = "0 0 0 0") => {
-  padding = padding.split(" ");
-  for (let i = 0, len = padding.length; i < len; i++) {
-    padding[i] = +padding[i].replace("px", "");
-  }
-  return padding;
-};
-
 export const measureWidth = (text, font) => {
   const { ctx } = CACHE_INFO;
   if (font) {
     ctx.font = font;
   }
   let res = ctx.measureText(text) || {};
-  return res.width || 0;
+  return Math.floor(res.width || 0);
 };
 
-export const getLineHeight = style => {
-  const { zoom } = CACHE_INFO.options;
-  let lineHeight;
-  if (!isNaN(style.lineHeight) && style.lineHeight > style.fontSize) {
-    lineHeight = style.lineHeight;
-  } else {
-    style.lineHeight = (style.lineHeight || "") + "";
-    lineHeight = +style.lineHeight.replace("px", "");
-    lineHeight = lineHeight ? lineHeight : (style.fontSize || 14) * 1.2;
-  }
-  return lineHeight * zoom;
-};
 /**
  * 支持负值绘制，从右边计算
  * @param {*} item
@@ -169,4 +125,43 @@ export const resetTextPositionY = (item, style, lineNum = 0) => {
   let top = style.padding ? style.padding[0] || 0 : 0;
   // y + lineheight偏移 + 行数 + paddingTop + 整体画布位移
   return item.y + blockLineHeightFix + lineNum * lineHeight + top + translateY;
+};
+
+/**
+ * 通过样式绘制文字
+ * @param {*} style
+ */
+export const drawText = style => {
+  const { ctx, zoom, options } = CACHE_INFO;
+  style.fontSize = cNum(style.fontSize);
+  const fontSize = Math.ceil((style.fontSize || options.FONT_SIZE) * zoom);
+  ctx.setTextBaseline("top");
+  ctx.font = calTxt(style, fontSize);
+  ctx.setFillStyle(style.color || options.FONT_COL);
+};
+
+export const drawRectToCanvas = (x, y, width, height, style) => {
+  let { fill, border, boxShadow } = style;
+  const { ctx, options } = CACHE_INFO;
+  ctx.save();
+
+  ctx.setShadow(0, 0, 0, "#ffffff");
+  if (fill && typeof fill !== "string") {
+    ctx.setFillStyle(boxShadow.color || options.SHADOW_COL);
+    ctx.fillRect(x, y, width, height);
+  }
+  setFill(fill);
+  ctx.fillRect(x, y, width, height);
+  drawBorder(border, style, calBorder => {
+    const fixBorder = calBorder.width;
+    ctx.strokeRect(
+      x - fixBorder / 2,
+      y - fixBorder / 2,
+      width + fixBorder,
+      height + fixBorder
+    );
+  });
+
+  ctx.draw(true);
+  ctx.restore();
 };

@@ -1,36 +1,27 @@
 import {
-  transferPadding,
   measureWidth,
-  cNum,
-  getLineHeight,
   resetPositionX,
   resetPositionY,
   resetTextPositionX,
   resetTextPositionY,
-  drawBoxShadow,
-} from "../baseFun";
+  drawText,
+} from "../drawFun";
 import { CACHE_INFO } from "../config";
-import { drawTextBackgroud, getTextSingleLine } from "../tools";
-import { calTxt } from "../utils";
+import { transferPadding, getLineHeight } from "../utils";
+import { drawTextBackgroud, getTextSingleLine } from "../core";
 
 export default (item, style, resolve, reject, type = "text") => {
-  const { ctx, zoom } = CACHE_INFO;
+  const { ctx } = CACHE_INFO;
   let leftOffset = 0;
   let topOffset = 0;
   try {
-    style.fontSize = cNum(style.fontSize);
-    const fontSize = Math.ceil((style.fontSize || 14) * zoom);
-    ctx.setTextBaseline("top");
-    ctx.font = calTxt(style, fontSize);
-    ctx.setFillStyle(style.color || "#454545");
-    console.log(1);
+    drawText(style);
     let text = item.text || "";
-    let textWidth = Math.floor(measureWidth(text, style.font || ctx.font));
+    let textWidth = measureWidth(text, style.font || ctx.font);
     let lineHeight = getLineHeight(style);
     let textHeight =
       Math.ceil(textWidth / (style.width || textWidth)) * lineHeight;
     let width = Math.ceil(style.width || textWidth);
-    let whiteSpace = style.whiteSpace || "wrap";
     let x = 0;
     let y = 0;
     if (typeof style.padding === "string") {
@@ -38,8 +29,7 @@ export default (item, style, resolve, reject, type = "text") => {
     }
     item.x = resetPositionX(item, style);
     item.y = resetPositionY(item, style, textHeight);
-    console.log(2);
-    drawBoxShadow(style.boxShadow);
+    ctx.setShadow(0, 0, 0, "#ffffff");
     if (style.background || style.border) {
       drawTextBackgroud(item, style, textWidth, textHeight);
     }
@@ -68,7 +58,7 @@ export default (item, style, resolve, reject, type = "text") => {
         text = text.substring(currentIndex, text.length);
         currentIndex = 0;
         lineNum = Math.max(Math.floor(textWidth / width), 1);
-        textWidth = Math.floor(measureWidth(text, style.font || ctx.font));
+        textWidth = measureWidth(text, style.font || ctx.font);
         item.x = item.originX; // 还原换行后的x
         for (let i = 0; i < lineNum; i++) {
           let { endIndex, single, singleWidth } = getTextSingleLine(
@@ -88,10 +78,8 @@ export default (item, style, resolve, reject, type = "text") => {
             }
           }
         }
-
         let last = text.substring(currentIndex, length);
         let lastWidth = measureWidth(last);
-
         if (last) {
           x = resetTextPositionX(item, style, lastWidth, width);
           y = resetTextPositionY(item, style, lineNum + 1);
@@ -107,53 +95,9 @@ export default (item, style, resolve, reject, type = "text") => {
         topOffset = lineHeight;
       }
     } else {
-      // block文本，如果文本长度超过宽度换行
-      if (width && textWidth > width && whiteSpace !== "nowrap") {
-        let lineNum = Math.max(Math.floor(textWidth / width), 1);
-        let length = text.length;
-        let singleLength = Math.floor(length / lineNum);
-        let currentIndex = 0;
-
-        // lineClamp参数限制最多行数
-        if (style.lineClamp && lineNum + 1 > style.lineClamp) {
-          lineNum = style.lineClamp - 1;
-        }
-
-        for (let i = 0; i < lineNum; i++) {
-          let { endIndex, single, singleWidth } = getTextSingleLine(
-            text,
-            width,
-            singleLength,
-            currentIndex
-          );
-          currentIndex = endIndex;
-          x = resetTextPositionX(item, style, singleWidth, width);
-          y = resetTextPositionY(item, style, i);
-          ctx.fillText(single, x, y);
-        }
-
-        // 换行后剩余的文字，超过一行则截断增加省略号
-        let last = text.substring(currentIndex, length);
-        let lastWidth = measureWidth(last);
-        if (lastWidth > width) {
-          let { single, singleWidth } = getTextSingleLine(
-            last,
-            width,
-            singleLength
-          );
-          lastWidth = singleWidth;
-          last = single.substring(0, single.length - 1) + "...";
-        }
-
-        x = resetTextPositionX(item, style, lastWidth, width);
-        y = resetTextPositionY(item, style, lineNum);
-        ctx.fillText(last, x, y);
-      } else {
-        x = resetTextPositionX(item, style, textWidth, width);
-        y = resetTextPositionY(item, style);
-        console.log(3);
-        ctx.fillText(item.text, x, y);
-      }
+      x = resetTextPositionX(item, style, textWidth, width);
+      y = resetTextPositionY(item, style);
+      ctx.fillText(item.text, x, y);
     }
     ctx.draw(true);
     if (resolve) {

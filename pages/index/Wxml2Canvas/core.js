@@ -1,40 +1,7 @@
-import {
-  drawBoxShadow,
-  setFill,
-  drawBorder,
-  cNum,
-  transferPadding,
-  measureWidth,
-} from "./baseFun";
-import { COMPUT_STYLE, CACHE_INFO } from "./config";
+import { measureWidth, drawRectToCanvas } from "./drawFun";
+import { CACHE_INFO } from "./config";
 import drawText from "./draw/text";
-
-export const drawRectToCanvas = (x, y, width, height, style) => {
-  let { fill, border, boxShadow } = style;
-  const { ctx } = CACHE_INFO;
-  ctx.save();
-  drawBoxShadow(boxShadow, shadow => {
-    // 真机上填充渐变色时，没有阴影，先画个相等大小的纯色矩形来实现阴影
-    if (fill && typeof fill !== "string") {
-      ctx.setFillStyle(shadow.color || "#ffffff");
-      ctx.fillRect(x, y, width, height);
-    }
-  });
-  setFill(fill);
-  ctx.fillRect(x, y, width, height);
-  drawBorder(border, style, calBorder => {
-    const fixBorder = calBorder.width;
-    ctx.strokeRect(
-      x - fixBorder / 2,
-      y - fixBorder / 2,
-      width + fixBorder,
-      height + fixBorder
-    );
-  });
-
-  ctx.draw(true);
-  ctx.restore();
-};
+import { transferPadding, cNum } from "./utils";
 
 export const setBaseInfo = () => {
   const { ctx, options } = CACHE_INFO;
@@ -44,49 +11,6 @@ export const setBaseInfo = () => {
   ctx.setTextBaseline("top");
   ctx.setStrokeStyle("white");
   drawRectToCanvas(0, 0, width, height, style);
-};
-
-export const getWxml = item => {
-  const { options } = CACHE_INFO;
-  const { obj, width, zoom } = options;
-  const query = obj
-    ? wx.createSelectorQuery().in(obj)
-    : wx.createSelectorQuery();
-  const p1 = new Promise(resolve => {
-    let once;
-    query
-      .selectAll(`${item.class}`)
-      .fields(
-        {
-          dataset: true,
-          size: true,
-          rect: true,
-          computedStyle: COMPUT_STYLE,
-        },
-        res => {
-          if (!once) {
-            once = true;
-            resolve(res);
-          }
-        }
-      )
-      .exec();
-  });
-  const p2 = new Promise(resolve => {
-    if (!item.limit) resolve({ top: 0, width: width / zoom });
-    query
-      .select(`${item.limit}`)
-      .fields(
-        {
-          dataset: true,
-          size: true,
-          rect: true,
-        },
-        res => resolve(res)
-      )
-      .exec();
-  });
-  return Promise.all([p1, p2]);
 };
 
 // 以行进行分类
@@ -107,7 +31,7 @@ export const sortListByTop = list => {
 };
 
 export const transferWxmlStyle = (sub, item, limitLeft, limitTop) => {
-  const { zoom } = CACHE_INFO;
+  const { zoom, options } = CACHE_INFO;
   let leftFix = +sub.dataset.left || 0;
   let topFix = +sub.dataset.top || 0;
 
@@ -116,7 +40,7 @@ export const transferWxmlStyle = (sub, item, limitLeft, limitTop) => {
   sub.left = cNum(sub.left) - limitLeft + (leftFix + (item.x || 0)) * zoom;
   sub.top = cNum(sub.top) - limitTop + (topFix + (item.y || 0)) * zoom;
 
-  let padding = sub.dataset.padding || "0 0 0 0";
+  let padding = sub.dataset.padding || options.PADDING;
   if (typeof padding === "string") {
     padding = transferPadding(padding);
   }
@@ -143,8 +67,7 @@ const drawAfter = (sub, item, limitLeft, limitTop, leftOffset, maxWidth) => {
     ...(leftOffset && { leftOffset }),
     ...(maxWidth && { maxWidth }),
   };
-  sub.background =
-    sub.dataset.background || sub.backgroundColor || "rgba(0, 0, 0, 0)";
+  sub.background = sub.dataset.background || sub.backgroundColor;
   return textData;
 };
 

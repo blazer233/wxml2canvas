@@ -1,12 +1,11 @@
 import { GET_INIT } from "./config";
 import {
   setBaseInfo,
-  getWxml,
   sortListByTop,
   drawWxmlBlock,
   drawWxmlInline,
-} from "./tools.js";
-
+} from "./core.js";
+import { getWxml } from "./utils";
 export default config => {
   return new Promise(async (resolve, reject) => {
     GET_INIT(config);

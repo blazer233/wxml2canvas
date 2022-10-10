@@ -1,4 +1,4 @@
-const device = (wx.getSystemInfoSync && wx.getSystemInfoSync()) || {};
+const device = wx.getSystemInfoSync() || {};
 const destzoom = 3;
 
 export const zoom = device.windowWidth / 375;
@@ -15,6 +15,11 @@ export const GET_INIT = (config = {}) => {
     translateY: (config.translateY || 0) * zoom,
     background: config.background || "#ffffff",
     font: config.font || "14px PingFang SC",
+    TOP: "top",
+    SHADOW_COL: "#ffffff",
+    PADDING: "0 0 0 0",
+    FONT_SIZE: "14",
+    FONT_COL: "#454545",
   };
   CACHE_INFO.options = info;
   CACHE_INFO.zoom = zoom;

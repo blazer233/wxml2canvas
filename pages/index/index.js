@@ -15,7 +15,7 @@ Page({
       background: "#f0f0f0",
       options: {
         type: "wxml",
-        class: ".share__canvas1 .draw_canvas",
+        class: ".draw_canvas",
         limit: ".share__canvas1",
         x: 0,
         y: 0,
