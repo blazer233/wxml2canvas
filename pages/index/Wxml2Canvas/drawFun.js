@@ -1,5 +1,5 @@
 import { CACHE_INFO } from "./config";
-import { transferBorder, calTxt, tNum, getLineHeight } from "./utils";
+import { calTxt, tNum, getLineHeight } from "./utils";
 
 export const measureWidth = (text, font) => {
   const { ctx } = CACHE_INFO;
@@ -110,7 +110,7 @@ export const drawRectToCanvas = (x, y, width, height, style) => {
   ctx.save();
   ctx.setShadow(0, 0, 0, options.SHADOW_COL);
   ctx.setFillStyle(fill);
-  console.log(x, y)
+  console.log(x, y);
   ctx.fillRect(x, y, width, height);
   ctx.draw(true);
   ctx.restore();

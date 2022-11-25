@@ -29,9 +29,9 @@ export const sortListByTop = list => {
   return [arrBlock, lineTemp];
 };
 
-export const transferWxmlStyle = (el, limit) => {
+export const transferWxmlStyle = el => {
   const { options } = CACHE_INFO;
-  const { left: limitLeft = 0, top: limitTop = 0 } = limit;
+  const { left: limitLeft = 0, top: limitTop = 0 } = options.limit;
   let leftFix = +el.dataset.left || 0;
   let topFix = +el.dataset.top || 0;
 
@@ -51,8 +51,8 @@ export const transferWxmlStyle = (el, limit) => {
   el.padding = [paddingTop, paddingRight, paddingBottom, paddingLeft];
 };
 
-const drawAfter = (el, limit, leftOffset, maxWidth) => {
-  transferWxmlStyle(el, limit);
+const drawAfter = (el, leftOffset, maxWidth) => {
+  transferWxmlStyle(el);
   let text = el.dataset.text || "";
   el.background = el.dataset.background || el.backgroundColor;
   return {
@@ -66,16 +66,16 @@ const drawAfter = (el, limit, leftOffset, maxWidth) => {
 };
 
 // 用来限定位置范围，取相对位置
-export const drawWxmlBlock = (block = [], limit = {}) =>
+export const drawWxmlBlock = (block = []) =>
   block.map(
     el =>
       new Promise((resolve, reject) => {
-        const textData = drawAfter(el, limit);
+        const textData = drawAfter(el);
         drawText(textData, el, resolve, reject, "text");
       })
   );
 
-export const drawWxmlInline = (inline, limit = {}) => {
+export const drawWxmlInline = inline => {
   let leftOffset = 0;
   return new Promise(resolve => {
     let maxWidth = 0;
@@ -91,7 +91,7 @@ export const drawWxmlInline = (inline, limit = {}) => {
     maxWidth = Math.ceil(maxRight - minLeft);
     Object.keys(inline).forEach(top => {
       inline[top].forEach(el => {
-        const textData = drawAfter(el, limit, leftOffset, maxWidth);
+        const textData = drawAfter(el, leftOffset, maxWidth);
         const drawRes = drawText(textData, el, null, null, "inline-text");
         leftOffset = drawRes.leftOffset; // 每次绘制从上次结束地方开始
       });

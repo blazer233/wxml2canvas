@@ -1,15 +1,5 @@
 import { CACHE_INFO, COMPUT_STYLE } from "./config";
 
-export const transferBorder = (border = "") => {
-  let res = border.match(/(\w+)px\s(\w+)\s(.*)/);
-  let obj = {};
-  if (res) {
-    let [, width, style, color] = res;
-    obj = { width: +width, style, color };
-  }
-  return obj;
-};
-
 export const tNum = number => {
   return isNaN(number) ? +(number || "").replace("px", "") : number;
 };

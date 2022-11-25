@@ -1,21 +1,22 @@
+const DEFAULT_CONFIG = {
+  TOP: "top",
+  translateX: 0,
+  translateY: 0,
+  FONT_SIZE: "14",
+  PADDING: "0 0 0 0",
+  FONT_COL: "#454545",
+  SHADOW_COL: "#ffffff",
+  background: "#ffffff",
+  font: "14px PingFang SC",
+};
+
 export const CACHE_INFO = {};
-export const GET_INIT = (config = {}) => {
-  const info = {
-    ...config,
-    width: config.width,
-    height: config.height,
-    translateX: config.translateX || 0,
-    translateY: config.translateY || 0,
-    background: config.background || "#ffffff",
-    font: config.font || "14px PingFang SC",
-    TOP: "top",
-    SHADOW_COL: "#ffffff",
-    PADDING: "0 0 0 0",
-    FONT_SIZE: "14",
-    FONT_COL: "#454545",
-  };
+
+export const setInit = (config = {}) => {
+  const info = { ...DEFAULT_CONFIG, ...config };
   CACHE_INFO.options = info;
   CACHE_INFO.ctx = wx.createCanvasContext(info.element, info.obj);
+  return arg => Object.keys(arg).forEach(i => (CACHE_INFO.options[i] = arg[i]));
 };
 
 export const COMPUT_STYLE = [
