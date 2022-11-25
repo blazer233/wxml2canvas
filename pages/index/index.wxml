@@ -1,37 +1,25 @@
 <view class="share">
-  <view class="share__title">Wxml:</view>
-  <view class="share__canvas share__canvas1">
-    <view class="share__canvas3-inline draw_canvas" data-type="inline-text" data-text="这是行内文字">
-      这是行内文字
-    </view>
-    <view class="share__canvas3-inline -blue draw_canvas" data-type="inline-text" data-text="这是蓝色行内文字试试">
+  <view class="content">Wxml:</view>
+  <view class="-box limit-r">
+    <view class="-inline exc-c" data-type="inline-text" data-text="这是行内文字">这是行内文字</view>
+    <view class="-inline -blue exc-c" data-type="inline-text" data-text="这是蓝色行内文字试试">
       这是蓝色行内文字试试
     </view>
-    <view class="share__canvas3-inline draw_canvas" data-type="inline-text" data-text="这是行内文字">
-      这是行内文字
-    </view>
-    <view class="share__canvas3-inline -red draw_canvas" data-type="inline-text" data-text="这是红色行内文字试试">
+    <view class="-inline exc-c" data-type="inline-text" data-text="这是行内行内文字">这是行内行内文字</view>
+    <view class="-inline -red exc-c" data-type="inline-text" data-text="这是红色行内文字试试">
       这是红色行内文字试试
     </view>
-    <view class="share__canvas1-text draw_canvas" data-type="text" data-text="这是无边距文字">
-      这是无边距文字
-    </view>
-    <view class="share__canvas1-text-2 draw_canvas" data-type="text" data-text="这是margin文字">
-      这是margin文字
-    </view>
-    <view class="share__canvas1-text-3 draw_canvas" data-type="text" data-text="这是padding文字">
-      这是padding文字
-    </view>
-    <view class="share__canvas1-text-4 draw_canvas" data-type="text" data-text="这是居中有背景文字">
-      这是居中有背景文字
-    </view>
-    <view class="share__canvas1-text-5 draw_canvas" data-type="text" data-text="这是背景文字" data-background="rgba(255, 0, 0, 0.4)" data-padding="0 0 0 0">
+    <view class="-il exc-c" data-type="text" data-text="这是无边距文字">这是无边距文字</view>
+    <view class="-il-2 exc-c" data-type="text" data-text="这是margin文字">这是margin文字</view>
+    <view class="-il-3 exc-c" data-type="text" data-text="这是padding文字">这是padding文字</view>
+    <view class="-il-4 exc-c" data-type="text" data-text="这是居中有背景文字">这是居中有背景文字</view>
+    <view class="-il-5 exc-c" data-type="text" data-text="这是背景文字" data-background="rgba(255, 0, 0, 0.4)" data-padding="0 0 0 0">
       这是背景文字
     </view>
   </view>
-  <view class="share__title">Canvas:</view>
-  <canvas canvas-id="canvas1" class="share__canvas"></canvas>
-  <view class="share__title">photo:</view>
+  <view class="content">Canvas:</view>
+  <canvas canvas-id="over-canvas" class="-box"></canvas>
+  <view class="content">photo:</view>
   <image src="{{ imageInfo }}" class="share__result-img {{ idx === 3 || idx === 5 ? 'share__result-img-4' : ''}}" mode="widthFix"></image>
   <button catchtap="saveImage" class="share__button">保存图片</button>
 </view>

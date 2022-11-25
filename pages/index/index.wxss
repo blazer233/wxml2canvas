@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 
-.share__canvas {
+.-box {
     width: 700rpx;
     height: 500rpx;
     background: #f0f0f0;
@@ -16,30 +16,30 @@
     font-size: 32rpx;
 }
 
-.share__title {
+.content {
     width: 100%;
     margin-left: 80rpx;
     margin-bottom: 40rpx;
 }
 
-.share__canvas1-text {
+.-il {
     color: #000000;
 }
 
-.share__canvas1-text-2 {
+.-il-2 {
     color: #ff0000;
     font-size: 36rpx;
     margin-left: 20rpx;
     margin-top: 20rpx;
 }
 
-.share__canvas1-text-3 {
+.-il-3 {
     color: #00ff00;
     padding-left: 40rpx;
     padding-top: 20rpx;
 }
 
-.share__canvas1-text-4 {
+.-il-4 {
     color: #0000ff;
     margin-left: 20rpx;
     margin-top: 20rpx;
@@ -49,7 +49,7 @@
     padding: 20rpx;
 }
 
-.share__canvas1-text-5 {
+.-il-5 {
     color: #0000ff;
     margin-left: 20rpx;
     margin-top: 20rpx;
@@ -63,7 +63,7 @@
     box-sizing: border-box;
 }
 
-.share__canvas3-inline {
+.-inline {
     display: inline;
     vertical-align: middle;
     line-height: 50rpx;
@@ -92,10 +92,4 @@
 .share__button {
     margin-bottom: 30rpx;
     width: 240rpx;
-}
-
-.share__canvas3-inline {
-    display: inline;
-    vertical-align: middle;
-    line-height: 50rpx;
 }

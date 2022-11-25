@@ -11,18 +11,17 @@ Page({
     await wxml2Canvas({
       width: 340,
       height: 250,
-      element: "canvas1",
+      element: "over-canvas",
       background: "#f0f0f0",
       options: {
-        type: "wxml",
-        class: ".draw_canvas",
-        limit: ".share__canvas1",
+        class: ".exc-c",
+        limit: ".limit-r",
       },
     });
     wx.canvasToTempFilePath({
       width: 340,
       height: 250,
-      canvasId: "canvas1",
+      canvasId: "over-canvas",
       success: res => {
         this.setData({ imageInfo: res.tempFilePath });
       },

@@ -1,40 +1,5 @@
 import { CACHE_INFO } from "./config";
-import { transferBorder, calTxt, cNum, getLineHeight } from "./utils";
-
-export const setFill = (fill, cb) => {
-  const { ctx } = CACHE_INFO;
-  if (typeof fill === "string") {
-    ctx.setFillStyle(fill);
-  } else {
-    let line = fill.line;
-    let color = fill.color;
-    let grd = ctx.createLinearGradient(line[0], line[1], line[2], line[3]);
-    grd.addColorStop(0, color[0]);
-    grd.addColorStop(1, color[1]);
-    ctx.setFillStyle(grd);
-  }
-  cb && cb();
-};
-
-export const drawBorder = (border, style, cb) => {
-  const { ctx, zoom } = CACHE_INFO;
-  border = transferBorder(border);
-  if (border && border.width) {
-    // 空白阴影，清空掉边框的阴影
-    ctx.setShadow(0, 0, 0, "#ffffff");
-    if (border) {
-      ctx.setLineWidth(border.width * zoom);
-      if (border.style === "dashed") {
-        let dash = style.dash || [5, 5, 0];
-        let offset = dash[2] || 0;
-        let array = [dash[0] || 5, dash[1] || 5];
-        ctx.setLineDash(array, offset);
-      }
-      ctx.setStrokeStyle(border.color);
-    }
-    cb && cb(border || {});
-  }
-};
+import { transferBorder, calTxt, tNum, getLineHeight } from "./utils";
 
 export const measureWidth = (text, font) => {
   const { ctx } = CACHE_INFO;
@@ -51,13 +16,13 @@ export const measureWidth = (text, font) => {
  * @param {*} style
  */
 export const resetPositionX = (item, style) => {
-  const { width, translateX, zoom } = CACHE_INFO.options;
+  const { width, translateX } = CACHE_INFO.options;
   let x = 0;
   // 通过wxml获取的不需要重置坐标
   if (item.x < 0 && item.type) {
-    x = width + item.x * zoom - style.width * zoom;
+    x = width + item.x - style.width;
   } else {
-    x = item.x * zoom;
+    x = item.x;
   }
 
   if (parseInt(style.borderWidth)) {
@@ -73,13 +38,12 @@ export const resetPositionX = (item, style) => {
  * @param {*} style
  */
 export const resetPositionY = (item, style, textHeight) => {
-  const { height, translateY, zoom } = CACHE_INFO.options;
+  const { height, translateY } = CACHE_INFO.options;
   let y = 0;
   if (item.y < 0) {
-    y =
-      height + item.y * zoom - (textHeight ? textHeight : style.height * zoom);
+    y = height + item.y - (textHeight ? textHeight : style.height);
   } else {
-    y = item.y * zoom;
+    y = item.y;
   }
   if (parseInt(style.borderWidth)) {
     y += parseInt(style.borderWidth);
@@ -114,9 +78,9 @@ export const resetTextPositionX = (item, style, textWidth, width) => {
  * @param {*} textWidth
  */
 export const resetTextPositionY = (item, style, lineNum = 0) => {
-  const { zoom, translateY } = CACHE_INFO.options;
+  const { translateY } = CACHE_INFO.options;
   let lineHeight = getLineHeight(style);
-  let fontSize = Math.ceil((style.fontSize || 14) * zoom);
+  let fontSize = Math.ceil(style.fontSize || 14);
 
   let blockLineHeightFix =
     ((style.dataset && style.dataset.type) || "").indexOf("inline") > -1
@@ -132,36 +96,22 @@ export const resetTextPositionY = (item, style, lineNum = 0) => {
  * @param {*} style
  */
 export const drawText = style => {
-  const { ctx, zoom, options } = CACHE_INFO;
-  style.fontSize = cNum(style.fontSize);
-  const fontSize = Math.ceil((style.fontSize || options.FONT_SIZE) * zoom);
+  const { ctx, options } = CACHE_INFO;
+  style.fontSize = tNum(style.fontSize);
+  const fontSize = Math.ceil(style.fontSize || options.FONT_SIZE);
   ctx.setTextBaseline("top");
   ctx.font = calTxt(style, fontSize);
   ctx.setFillStyle(style.color || options.FONT_COL);
 };
 
 export const drawRectToCanvas = (x, y, width, height, style) => {
-  let { fill, border, boxShadow } = style;
+  let { fill } = style;
   const { ctx, options } = CACHE_INFO;
   ctx.save();
-
-  ctx.setShadow(0, 0, 0, "#ffffff");
-  if (fill && typeof fill !== "string") {
-    ctx.setFillStyle(boxShadow.color || options.SHADOW_COL);
-    ctx.fillRect(x, y, width, height);
-  }
-  setFill(fill);
+  ctx.setShadow(0, 0, 0, options.SHADOW_COL);
+  ctx.setFillStyle(fill);
+  console.log(x, y)
   ctx.fillRect(x, y, width, height);
-  drawBorder(border, style, calBorder => {
-    const fixBorder = calBorder.width;
-    ctx.strokeRect(
-      x - fixBorder / 2,
-      y - fixBorder / 2,
-      width + fixBorder,
-      height + fixBorder
-    );
-  });
-
   ctx.draw(true);
   ctx.restore();
 };

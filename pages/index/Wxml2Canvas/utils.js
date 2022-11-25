@@ -10,28 +10,23 @@ export const transferBorder = (border = "") => {
   return obj;
 };
 
-export const cNum = number => {
+export const tNum = number => {
   return isNaN(number) ? +(number || "").replace("px", "") : number;
 };
 
 export const getLineHeight = style => {
-  const { zoom } = CACHE_INFO.options;
   let lineHeight;
-  if (!isNaN(style.lineHeight) && style.lineHeight > style.fontSize) {
-    lineHeight = style.lineHeight;
-  } else {
-    style.lineHeight = (style.lineHeight || "") + "";
-    lineHeight = +style.lineHeight.replace("px", "");
-    lineHeight = lineHeight ? lineHeight : (style.fontSize || 14) * 1.2;
-  }
-  return lineHeight * zoom;
+  style.lineHeight = (style.lineHeight || "") + "";
+  lineHeight = +style.lineHeight.replace("px", "");
+  lineHeight = lineHeight ? lineHeight : (style.fontSize || 14) * 1.2;
+  return lineHeight;
 };
 
 /**
  * 内边距，依次为上右下左
  * @param {*} padding
  */
-export const transferPadding = (padding = "0 0 0 0") => {
+export const transferPadding = (padding = CACHE_INFO.options.PADDING) => {
   padding = padding.split(" ");
   for (let i = 0, len = padding.length; i < len; i++) {
     padding[i] = +padding[i].replace("px", "");
@@ -47,13 +42,13 @@ export const calTxt = (style, fontSize) => {
 
 export const getWxml = item => {
   const { options } = CACHE_INFO;
-  const { obj, width, zoom } = options;
+  const { obj, width } = options;
   const query = obj
     ? wx.createSelectorQuery().in(obj)
     : wx.createSelectorQuery();
-  const p1 = new Promise(resolve => {
+  const render = new Promise(resolve => {
     query
-      .selectAll(`${item.class}`)
+      .selectAll(item.class)
       .fields(
         {
           dataset: true,
@@ -65,10 +60,10 @@ export const getWxml = item => {
       )
       .exec();
   });
-  const p2 = new Promise(resolve => {
-    if (!item.limit) resolve({ top: 0, width: width / zoom });
+  const limit = new Promise(resolve => {
+    if (!item.limit) resolve({ top: 0, width });
     query
-      .select(`${item.limit}`)
+      .select(item.limit)
       .fields(
         {
           dataset: true,
@@ -79,5 +74,5 @@ export const getWxml = item => {
       )
       .exec();
   });
-  return Promise.all([p1, p2]);
+  return Promise.all([render, limit]);
 };

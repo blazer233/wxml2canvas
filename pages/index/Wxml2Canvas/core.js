@@ -1,21 +1,20 @@
 import { measureWidth, drawRectToCanvas } from "./drawFun";
 import { CACHE_INFO } from "./config";
 import drawText from "./draw/text";
-import { transferPadding, cNum } from "./utils";
+import { transferPadding, tNum } from "./utils";
 
 export const setBaseInfo = () => {
   const { ctx, options } = CACHE_INFO;
   const { background, font, width, height } = options;
-  const style = { fill: background };
   ctx.font = font;
   ctx.setTextBaseline("top");
   ctx.setStrokeStyle("white");
-  drawRectToCanvas(0, 0, width, height, style);
+  drawRectToCanvas(0, 0, width, height, { fill: background });
 };
 
 // 以行进行分类
 export const sortListByTop = list => {
-  let [arrBlock, arrLine, lineTemp] = [[], [], {}];
+  const [arrBlock, arrLine, lineTemp] = [[], [], {}];
   list.forEach(i => {
     if (i.dataset.type && i.dataset.type.indexOf("inline") == -1) {
       arrBlock.push(i);
@@ -30,91 +29,71 @@ export const sortListByTop = list => {
   return [arrBlock, lineTemp];
 };
 
-export const transferWxmlStyle = (sub, item, limitLeft, limitTop) => {
-  const { zoom, options } = CACHE_INFO;
-  let leftFix = +sub.dataset.left || 0;
-  let topFix = +sub.dataset.top || 0;
+export const transferWxmlStyle = (el, limit) => {
+  const { options } = CACHE_INFO;
+  const { left: limitLeft = 0, top: limitTop = 0 } = limit;
+  let leftFix = +el.dataset.left || 0;
+  let topFix = +el.dataset.top || 0;
 
-  sub.width = cNum(sub.width);
-  sub.height = cNum(sub.height);
-  sub.left = cNum(sub.left) - limitLeft + (leftFix + (item.x || 0)) * zoom;
-  sub.top = cNum(sub.top) - limitTop + (topFix + (item.y || 0)) * zoom;
+  el.width = tNum(el.width);
+  el.height = tNum(el.height);
+  el.left = tNum(el.left) - limitLeft + leftFix;
+  el.top = tNum(el.top) - limitTop + topFix;
 
-  let padding = sub.dataset.padding || options.PADDING;
+  let padding = el.dataset.padding || options.PADDING;
   if (typeof padding === "string") {
     padding = transferPadding(padding);
   }
-  let paddingTop = +sub.paddingTop.replace("px", "") + +padding[0];
-  let paddingRight = +sub.paddingRight.replace("px", "") + +padding[1];
-  let paddingBottom = +sub.paddingBottom.replace("px", "") + +padding[2];
-  let paddingLeft = +sub.paddingLeft.replace("px", "") + +padding[3];
-  sub.padding = [paddingTop, paddingRight, paddingBottom, paddingLeft];
-
-  return sub;
+  let paddingTop = +el.paddingTop.replace("px", "") + +padding[0];
+  let paddingRight = +el.paddingRight.replace("px", "") + +padding[1];
+  let paddingBottom = +el.paddingBottom.replace("px", "") + +padding[2];
+  let paddingLeft = +el.paddingLeft.replace("px", "") + +padding[3];
+  el.padding = [paddingTop, paddingRight, paddingBottom, paddingLeft];
 };
 
-const drawAfter = (sub, item, limitLeft, limitTop, leftOffset, maxWidth) => {
-  sub = transferWxmlStyle(sub, item, limitLeft, limitTop);
-  let text = sub.dataset.text || "";
-  if (sub.dataset.maxlength && text.length > sub.dataset.maxlength) {
-    text = text.substring(0, sub.dataset.maxlength) + "...";
-  }
-  const textData = {
+const drawAfter = (el, limit, leftOffset, maxWidth) => {
+  transferWxmlStyle(el, limit);
+  let text = el.dataset.text || "";
+  el.background = el.dataset.background || el.backgroundColor;
+  return {
     text,
-    x: leftOffset || sub.left,
-    y: sub.top,
-    originX: sub.left,
+    x: leftOffset || el.left,
+    y: el.top,
+    originX: el.left,
     ...(leftOffset && { leftOffset }),
     ...(maxWidth && { maxWidth }),
   };
-  sub.background = sub.dataset.background || sub.backgroundColor;
-  return textData;
 };
 
 // 用来限定位置范围，取相对位置
-export const drawWxmlBlock = (item, sorted = [], target = {}) => {
-  let limitLeft = target.left || 0;
-  let limitTop = target.top || 0;
-  const all = [];
-  sorted.forEach(sub => {
-    all.push(
+export const drawWxmlBlock = (block = [], limit = {}) =>
+  block.map(
+    el =>
       new Promise((resolve, reject) => {
-        const textData = drawAfter(sub, item, limitLeft, limitTop);
-        drawText(textData, sub, resolve, reject, "text");
+        const textData = drawAfter(el, limit);
+        drawText(textData, el, resolve, reject, "text");
       })
-    );
-  });
-  return all;
-};
+  );
 
-export const drawWxmlInline = (item, sorted, results = {}) => {
+export const drawWxmlInline = (inline, limit = {}) => {
   let leftOffset = 0;
-  let limitLeft = results.left || 0;
-  let limitTop = results.top || 0;
   return new Promise(resolve => {
     let maxWidth = 0;
     let minLeft = Infinity;
-    let maxRight = 0;
-    // 找出同一top下的最小left和最大right，得到最大的宽度，用于换行
-    Object.keys(sorted).forEach(top => {
-      sorted[top].forEach(sub => {
-        if (sub.left < minLeft) minLeft = sub.left;
-        if (sub.right > maxRight) maxRight = sub.right;
+    let maxRight = -Infinity;
+    Object.keys(inline).forEach(top => {
+      inline[top].forEach(el => {
+        minLeft = Math.min(el.left, minLeft);
+        maxRight = Math.max(el.right, maxRight);
       });
     });
-    maxWidth = Math.ceil(maxRight - minLeft || self.width);
-    Object.keys(sorted).forEach(top => {
-      sorted[top].forEach(sub => {
-        const textData = drawAfter(
-          sub,
-          item,
-          limitLeft,
-          limitTop,
-          leftOffset,
-          maxWidth
-        );
-        const drawRes = drawText(textData, sub, null, null, "inline-text");
-        leftOffset = drawRes.leftOffset;
+    // 找出同一top下的最小left和最大right，得到最大的宽度，用于换行
+    maxWidth = Math.ceil(maxRight - minLeft);
+    Object.keys(inline).forEach(top => {
+      inline[top].forEach(el => {
+        const textData = drawAfter(el, limit, leftOffset, maxWidth);
+        const drawRes = drawText(textData, el, null, null, "inline-text");
+        leftOffset = drawRes.leftOffset; // 每次绘制从上次结束地方开始
       });
     });
     resolve();
@@ -132,6 +111,7 @@ export const drawTextBackgroud = (item, style, textWidth, textHeight) => {
   style.padding = style.padding || [0, 0, 0, 0];
   width += (style.padding[1] || 0) + (style.padding[3] || 0);
   height += (style.padding[0] || 0) + (style.padding[2] || 0);
+  console.log(item);
   drawRectToCanvas(item.x, item.y, width, height, rectStyle);
 };
 
