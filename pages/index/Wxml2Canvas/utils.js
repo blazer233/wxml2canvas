@@ -1,20 +1,19 @@
 import { CACHE_INFO, COMPUT_STYLE } from "./config";
 
-export const tNum = number => {
-  return isNaN(number) ? +(number || "").replace("px", "") : number;
-};
+export const tNum = number =>
+  isNaN(number) ? +(number || "").replace("px", "") : number;
 
 export const getLineHeight = style => {
   let lineHeight;
-  style.lineHeight = (style.lineHeight || "") + "";
+  style.lineHeight = `${style.lineHeight || ""}`;
   lineHeight = +style.lineHeight.replace("px", "");
   lineHeight = lineHeight ? lineHeight : (style.fontSize || 14) * 1.2;
   return lineHeight;
 };
 
 /**
- * 内边距，依次为上右下左
- * @param {*} padding
+ * 解析出内边距，依次为上右下左
+ * @param { string } padding 内边距值
  */
 export const transferPadding = (padding = CACHE_INFO.options.PADDING) => {
   padding = padding.split(" ");
@@ -24,11 +23,10 @@ export const transferPadding = (padding = CACHE_INFO.options.PADDING) => {
   return padding;
 };
 
-export const calTxt = (style, fontSize) => {
-  return `${style.fontWeight ? style.fontWeight : "normal"} ${fontSize}px ${
+export const calTxt = (style, fontSize) =>
+  `${style.fontWeight ? style.fontWeight : "normal"} ${fontSize}px ${
     style.fontFamily || "PingFang SC"
   }`;
-};
 
 export const getWxml = item => {
   const { options } = CACHE_INFO;

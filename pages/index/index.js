@@ -8,7 +8,7 @@ Page({
     this.init();
   },
   async init() {
-    await wxml2Canvas({
+    const res = await wxml2Canvas({
       width: 340,
       height: 250,
       element: "over-canvas",
@@ -18,6 +18,7 @@ Page({
         limit: ".limit-r",
       },
     });
+    console.log(res);
     wx.canvasToTempFilePath({
       width: 340,
       height: 250,

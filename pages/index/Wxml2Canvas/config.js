@@ -1,7 +1,6 @@
 const DEFAULT_CONFIG = {
   TOP: "top",
-  translateX: 0,
-  translateY: 0,
+  width: 340,
   FONT_SIZE: "14",
   PADDING: "0 0 0 0",
   FONT_COL: "#454545",

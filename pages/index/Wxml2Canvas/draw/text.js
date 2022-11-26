@@ -1,16 +1,18 @@
-import {
-  measureWidth,
-  resetPositionX,
-  resetPositionY,
-  resetTextPositionX,
-  resetTextPositionY,
-  drawText,
-} from "../drawFun";
 import { CACHE_INFO } from "../config";
-import { transferPadding, getLineHeight } from "../utils";
-import { drawTextBackgroud, getTextSingleLine } from "../core";
+import { getLineHeight } from "../utils";
+import { drawTextBackgroud, getTextSingleLine } from "./tools";
+import { measureWidth, setTxtAlignX, setTxtAlignY, drawText } from "../drawFun";
 
-export default (textData, el, resolve, reject, type = "text") => {
+/**
+ * 绘制文字
+ * @param { object } textData
+ * @param { object } el
+ * @param { function } resolve
+ * @param { function } reject
+ * @param { string } type
+ * @returns
+ */
+const DrawTxt = (textData, el, resolve, reject, type = "text") => {
   const { ctx } = CACHE_INFO;
   let leftOffset = 0;
   let topOffset = 0;
@@ -18,40 +20,33 @@ export default (textData, el, resolve, reject, type = "text") => {
     drawText(el);
     let text = textData.text || "";
     let textWidth = measureWidth(text, el.font || ctx.font);
-    let lineHeight = getLineHeight(el);
-    let textHeight =
+    const lineHeight = getLineHeight(el);
+    const textHeight =
       Math.ceil(textWidth / (el.width || textWidth)) * lineHeight;
     let width = Math.ceil(el.width || textWidth);
     let x = 0;
     let y = 0;
-    if (typeof el.padding === "string") {
-      el.padding = transferPadding(el.padding);
-    }
-    textData.x = resetPositionX(textData, el);
-    textData.y = resetPositionY(textData, el, textHeight);
-    ctx.setShadow(0, 0, 0, "#ffffff");
     if (el.background || el.border) {
       drawTextBackgroud(textData, el, textWidth, textHeight);
     }
-
     // 行内文本
     if (type === "inline-text") {
-      width = textData.maxWidth;
-      if (textData.leftOffset + textWidth > width) {
-        // 如果上一个行内元素换行了，这个元素要继续在后面补足一行
-        let lineNum = Math.max(Math.floor(textWidth / width), 1);
-        let length = text.length;
-        let singleLength = Math.floor(length / lineNum);
-        let widthOffset = textData.leftOffset
+      const maxw = textData.maxWidth;
+      // 如果上一个行内元素换行了，这个元素要继续在后面补足一行
+      if (textData.leftOffset + textWidth > maxw) {
+        let lineNum = Math.max(Math.floor(textWidth / maxw), 1);
+        const length = text.length;
+        const singleLength = Math.floor(length / lineNum);
+        const widthOffset = textData.leftOffset
           ? textData.leftOffset - textData.originX
           : 0;
         let {
           endIndex: currentIndex,
           single,
           singleWidth,
-        } = getTextSingleLine(text, width, singleLength, 0, widthOffset);
-        x = resetTextPositionX(textData, el, singleWidth);
-        y = resetTextPositionY(textData, el);
+        } = getTextSingleLine(text, maxw, singleLength, 0, widthOffset);
+        x = setTxtAlignX(textData, el, singleWidth);
+        y = setTxtAlignY(textData, el);
         ctx.fillText(single, x, y);
         leftOffset = x + singleWidth;
         topOffset = y;
@@ -59,11 +54,11 @@ export default (textData, el, resolve, reject, type = "text") => {
         // 去除第一行补的内容，然后重置
         text = text.substring(currentIndex, text.length);
         currentIndex = 0;
-        lineNum = Math.max(Math.floor(textWidth / width), 1);
+        lineNum = Math.max(Math.floor(textWidth / maxw), 1);
         textWidth = measureWidth(text, el.font || ctx.font);
         textData.x = textData.originX; // 还原换行后的x
         for (let i = 0; i < lineNum; i++) {
-          let { endIndex, single, singleWidth } = getTextSingleLine(
+          const { endIndex, single, singleWidth } = getTextSingleLine(
             text,
             width,
             singleLength,
@@ -71,8 +66,8 @@ export default (textData, el, resolve, reject, type = "text") => {
           );
           currentIndex = endIndex;
           if (single) {
-            x = resetTextPositionX(textData, el, singleWidth, width);
-            y = resetTextPositionY(textData, el, i + 1);
+            x = setTxtAlignX(textData, el, singleWidth, width);
+            y = setTxtAlignY(textData, el, i + 1);
             ctx.fillText(single, x, y);
             if (i === lineNum - 1) {
               leftOffset = x + singleWidth;
@@ -80,25 +75,16 @@ export default (textData, el, resolve, reject, type = "text") => {
             }
           }
         }
-        let last = text.substring(currentIndex, length);
-        let lastWidth = measureWidth(last);
-        if (last) {
-          x = resetTextPositionX(textData, el, lastWidth, width);
-          y = resetTextPositionY(textData, el, lineNum + 1);
-          ctx.fillText(last, x, y);
-          leftOffset = x + lastWidth;
-          topOffset = lineHeight * (lineNum + 1);
-        }
       } else {
-        x = resetTextPositionX(textData, el, textWidth, width);
-        y = resetTextPositionY(textData, el);
+        x = setTxtAlignX(textData, el, textWidth, width);
+        y = setTxtAlignY(textData, el);
         ctx.fillText(textData.text, x, y);
         leftOffset = x + textWidth;
         topOffset = lineHeight;
       }
     } else {
-      x = resetTextPositionX(textData, el, textWidth, width);
-      y = resetTextPositionY(textData, el);
+      x = setTxtAlignX(textData, el, textWidth, width);
+      y = setTxtAlignY(textData, el);
       ctx.fillText(textData.text, x, y);
     }
     ctx.draw(true);
@@ -114,3 +100,4 @@ export default (textData, el, resolve, reject, type = "text") => {
     reject && reject({ errcode: 1004, errmsg: "drawText error", e });
   }
 };
+export default DrawTxt;

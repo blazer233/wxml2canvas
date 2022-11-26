@@ -5,7 +5,7 @@
     <view class="-inline -blue exc-c" data-type="inline-text" data-text="这是蓝色行内文字试试">
       这是蓝色行内文字试试
     </view>
-    <view class="-inline exc-c" data-type="inline-text" data-text="这是行内行内文字">这是行内行内文字</view>
+    <view class="-inline exc-c" data-type="inline-text" data-text="这是换行的行内行内行内行内文字">这是换行的行内行内行内行内文字</view>
     <view class="-inline -red exc-c" data-type="inline-text" data-text="这是红色行内文字试试">
       这是红色行内文字试试
     </view>
