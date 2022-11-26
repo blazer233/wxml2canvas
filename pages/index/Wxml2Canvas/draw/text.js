@@ -59,13 +59,13 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
         for (let i = 0; i < lineNum; i++) {
           const [endIndex, single, sWidth] = getTextSingleLine(
             text,
-            width,
+            maxw,
             singleLength,
             endIdx
           );
           endIdx = endIndex;
           if (single) {
-            x = setTxtAlignX(textData, el, sWidth, width);
+            x = setTxtAlignX(textData, el, sWidth, maxw);
             y = setTxtAlignY(textData, el, i + 1);
             ctx.fillText(single, x, y);
             if (i === lineNum - 1) {
@@ -74,8 +74,17 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
             }
           }
         }
+        let last = text.substring(endIdx, length);
+        let lastWidth = measureWidth(last);
+        if (last) {
+          x = setTxtAlignX(textData, el, lastWidth, maxw);
+          y = setTxtAlignY(textData, el, lineNum + 1);
+          ctx.fillText(last, x, y);
+          leftOffset = x + lastWidth;
+          topOffset = lineHeight * (lineNum + 1);
+        }
       } else {
-        x = setTxtAlignX(textData, el, textWidth, width);
+        x = setTxtAlignX(textData, el, textWidth, maxw);
         y = setTxtAlignY(textData, el);
         ctx.fillText(textData.text, x, y);
         leftOffset = x + textWidth;
