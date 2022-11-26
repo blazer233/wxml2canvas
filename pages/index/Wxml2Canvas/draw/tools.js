@@ -45,9 +45,5 @@ export const getTextSingleLine = (
     singleWidth = measureWidth(single);
   }
 
-  return {
-    endIndex,
-    single,
-    singleWidth,
-  };
+  return [endIndex, single, singleWidth];
 };

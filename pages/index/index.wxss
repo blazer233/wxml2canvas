@@ -10,7 +10,7 @@
 
 .-box {
     width: 700rpx;
-    height: 500rpx;
+    height: 550rpx;
     background: #f0f0f0;
     margin-bottom: 40rpx;
     font-size: 32rpx;

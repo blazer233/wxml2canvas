@@ -5,9 +5,11 @@
     <view class="-inline -blue exc-c" data-type="inline-text" data-text="这是蓝色行内文字试试">
       这是蓝色行内文字试试
     </view>
-    <view class="-inline exc-c" data-type="inline-text" data-text="这是换行的行内行内行内行内文字">这是换行的行内行内行内行内文字</view>
-    <view class="-inline -red exc-c" data-type="inline-text" data-text="这是红色行内文字试试">
-      这是红色行内文字试试
+    <view class="-inline exc-c" data-type="inline-text" data-text="这是换行的行内行内行内行内行内行内行内行内文字">
+      这是换行的行内行内行内行内行内行内行内行内文字
+    </view>
+    <view class="-inline -red exc-c" data-type="inline-text" data-text="这是红色行内红色行内红色行内红色行内文字试试">
+      这是红色行内红色行内红色行内红色行内文字试试
     </view>
     <view class="-il exc-c" data-type="text" data-text="这是无边距文字">这是无边距文字</view>
     <view class="-il-2 exc-c" data-type="text" data-text="这是margin文字">这是margin文字</view>

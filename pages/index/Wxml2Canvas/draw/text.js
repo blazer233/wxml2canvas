@@ -10,7 +10,6 @@ import { measureWidth, setTxtAlignX, setTxtAlignY, drawText } from "../drawFun";
  * @param { function } resolve
  * @param { function } reject
  * @param { string } type
- * @returns
  */
 const DrawTxt = (textData, el, resolve, reject, type = "text") => {
   const { ctx } = CACHE_INFO;
@@ -37,40 +36,40 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
         let lineNum = Math.max(Math.floor(textWidth / maxw), 1);
         const length = text.length;
         const singleLength = Math.floor(length / lineNum);
-        const widthOffset = textData.leftOffset
-          ? textData.leftOffset - textData.originX
-          : 0;
-        let {
-          endIndex: currentIndex,
-          single,
-          singleWidth,
-        } = getTextSingleLine(text, maxw, singleLength, 0, widthOffset);
-        x = setTxtAlignX(textData, el, singleWidth);
+        const widthOffset = textData.leftOffset - textData.originX;
+        let [endIdx, fSingle, fsWidth] = getTextSingleLine(
+          text,
+          maxw,
+          singleLength,
+          0,
+          widthOffset
+        );
+        x = setTxtAlignX(textData, el, fsWidth);
         y = setTxtAlignY(textData, el);
-        ctx.fillText(single, x, y);
-        leftOffset = x + singleWidth;
+        ctx.fillText(fSingle, x, y);
+        leftOffset = x + fsWidth;
         topOffset = y;
 
         // 去除第一行补的内容，然后重置
-        text = text.substring(currentIndex, text.length);
-        currentIndex = 0;
+        text = text.substring(endIdx, text.length);
+        endIdx = 0;
         lineNum = Math.max(Math.floor(textWidth / maxw), 1);
         textWidth = measureWidth(text, el.font || ctx.font);
         textData.x = textData.originX; // 还原换行后的x
         for (let i = 0; i < lineNum; i++) {
-          const { endIndex, single, singleWidth } = getTextSingleLine(
+          const [endIndex, single, sWidth] = getTextSingleLine(
             text,
             width,
             singleLength,
-            currentIndex
+            endIdx
           );
-          currentIndex = endIndex;
+          endIdx = endIndex;
           if (single) {
-            x = setTxtAlignX(textData, el, singleWidth, width);
+            x = setTxtAlignX(textData, el, sWidth, width);
             y = setTxtAlignY(textData, el, i + 1);
             ctx.fillText(single, x, y);
             if (i === lineNum - 1) {
-              leftOffset = x + singleWidth;
+              leftOffset = x + sWidth;
               topOffset = lineHeight * lineNum;
             }
           }

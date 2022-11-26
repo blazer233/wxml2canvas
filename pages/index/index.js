@@ -9,8 +9,6 @@ Page({
   },
   async init() {
     const res = await wxml2Canvas({
-      width: 340,
-      height: 250,
       element: "over-canvas",
       background: "#f0f0f0",
       options: {
@@ -20,8 +18,6 @@ Page({
     });
     console.log(res);
     wx.canvasToTempFilePath({
-      width: 340,
-      height: 250,
       canvasId: "over-canvas",
       success: res => {
         this.setData({ imageInfo: res.tempFilePath });
