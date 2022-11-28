@@ -1,7 +1,7 @@
 import { CACHE_INFO } from "../config";
 import { getLineHeight } from "../utils";
 import { drawTextBackgroud, getTextSingleLine } from "./tools";
-import { measureWidth, setTxtAlignX, setTxtAlignY, drawText } from "../drawFun";
+import { measureWidth, drawText, setTxtAlign } from "../drawFun";
 
 /**
  * 绘制文字
@@ -44,8 +44,7 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
           0,
           widthOffset
         );
-        x = setTxtAlignX(textData, el, fsWidth);
-        y = setTxtAlignY(textData, el);
+        [x, y] = setTxtAlign(textData, el, fsWidth);
         ctx.fillText(fSingle, x, y);
         leftOffset = x + fsWidth;
         topOffset = y;
@@ -65,8 +64,7 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
           );
           endIdx = endIndex;
           if (single) {
-            x = setTxtAlignX(textData, el, sWidth, maxw);
-            y = setTxtAlignY(textData, el, i + 1);
+            [x, y] = setTxtAlign(textData, el, sWidth, maxw, i + 1);
             ctx.fillText(single, x, y);
             if (i === lineNum - 1) {
               leftOffset = x + sWidth;
@@ -77,22 +75,19 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
         let last = text.substring(endIdx, length);
         let lastWidth = measureWidth(last);
         if (last) {
-          x = setTxtAlignX(textData, el, lastWidth, maxw);
-          y = setTxtAlignY(textData, el, lineNum + 1);
+          [x, y] = setTxtAlign(textData, el, textWidth, maxw, lineNum + 1);
           ctx.fillText(last, x, y);
           leftOffset = x + lastWidth;
           topOffset = lineHeight * (lineNum + 1);
         }
       } else {
-        x = setTxtAlignX(textData, el, textWidth, maxw);
-        y = setTxtAlignY(textData, el);
+        [x, y] = setTxtAlign(textData, el, textWidth, maxw);
         ctx.fillText(textData.text, x, y);
         leftOffset = x + textWidth;
         topOffset = lineHeight;
       }
     } else {
-      x = setTxtAlignX(textData, el, textWidth, width);
-      y = setTxtAlignY(textData, el);
+      [x, y] = setTxtAlign(textData, el, textWidth, width);
       ctx.fillText(textData.text, x, y);
     }
     ctx.draw(true);

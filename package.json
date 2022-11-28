@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "rollup": "^3.5.0"
+  },
+  "name": "wxml2canvas",
+  "description": "![image.webp](https://raw.githubusercontent.com/blazer233/algorithm-learn/main/npm-learn/fsm/stately/image.webp)",
+  "version": "1.0.0",
+  "main": ".eslintrc.js",
+  "type": "module",
+  "devDependencies": {},
+  "scripts": {
+    "build": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blazer233/wxml2canvas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blazer233/wxml2canvas/issues"
+  },
+  "homepage": "https://github.com/blazer233/wxml2canvas#readme"
+}

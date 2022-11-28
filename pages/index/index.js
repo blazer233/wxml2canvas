@@ -1,4 +1,4 @@
-import wxml2Canvas from "./Wxml2Canvas/index";
+import wxml2Canvas from "../../Wxml2Canvas/index";
 Page({
   data: {
     imageInfo: "",
