@@ -32,10 +32,13 @@
       "outputPath": ""
     },
     "disableUseStrict": false,
-    "useCompilerPlugins": false,
+    "useCompilerPlugins": [
+      "typescript"
+    ],
     "minifyWXML": true
   },
   "condition": {},
+  "srcMiniprogramRoot": "miniprogram/",
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
