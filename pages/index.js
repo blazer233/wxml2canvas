@@ -1,6 +1,6 @@
-import wxml2Canvas from "../../dist";
-const app = getApp<IAppOption>()
-console.log(app)
+import wxml2Canvas from "../dist";
+const app = getApp();
+console.log(app);
 Page({
   data: {
     imageInfo: "",
