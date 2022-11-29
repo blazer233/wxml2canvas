@@ -1,7 +1,10 @@
 export default [
   {
     input: "./Wxml2Canvas/index.js",
-    output: "./bundle.js",
+    output: {
+      file: "./dist.js",
+      format: "es",
+    },
     watch: {
       exclude: ["node_modules/**"],
     },
