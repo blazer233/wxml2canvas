@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 # Node.js
 node_modules/
 miniprogram_npm/
+dist.js
 
 # IDE
 .idea
