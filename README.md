@@ -1,11 +1,11 @@
-# 实现一个小程序 wxml2canvas🎅
+# 实现一个小程序分享图 wxml2canvas
 
 ![image.webp](https://raw.githubusercontent.com/blazer233/algorithm-learn/main/npm-learn/fsm/stately/image.webp)
 
-> 项目代码：https://github.com/blazer233/algorithm-learn/tree/main/npm-learn/fsm/stately
+> 项目代码：https://github.com/blazer233/wxml2canvas/tree/func/simple
 >
 >
-> 参考轮子：https://github.com/fschaefer/Stately.js
+> 参考轮子：https://github.com/wg-front/wxml2canvas
 
 
 我们经常会遇上动态生成海报的需求，而在小程序中，生成图片非Canvas莫属。但是在实际工作当中，为了追求效率，我们会不可避免地去使用一些JS插件，而`wxml-to-canvas`(https://github.com/wechat-miniprogram/wxml-to-canvas) 就是一款官方推荐且非常优秀的插件，它可以轻松地帮你将HTML代码转换成Canvas，进而生成可保存分享的图片。
@@ -112,7 +112,7 @@ const Wxml2Canvas = config => {
 };
 ```
 
-#### 初始化基本属性
+#### 初始化
 
 在上面代码中，通过 `setInit` 设置 `canvas` 的基本属性，并将可配置的默认参数（宽度、字体大小、字体颜色...）以及 `ctx` 维护成一个对外暴露的公共对象，最后返回一个函数，供使用者更新配置
 
@@ -465,10 +465,8 @@ export const getTextSingleLine = (
 
 ## 总结
 
-这个 `fsm有限状态机` 主要完成了：
+以上就是实现简单 `wxml2canvas` 的全部步骤，通过 `块级元素` 和 `行内元素` 的拆分可以将目标元素转为指定的 `canvas` ，从而可以让使用者利用小程序的 `wx.canvasToTempFilePath` 将canvas对象转为图片最终让用户进行保存
 
-1. 状态的可观测
-2. 状态的链式调用
-3. 状态变化的钩子函数
+完整代码：https://github.com/blazer233/wxml2canvas/tree/func/simple
 
-以上就是 npm 包 [stately](https://github.com/fschaefer/Stately.js) 的源码学习。
+以上就是 npm 包 [wxml2canvas](https://github.com/wg-front/wxml2canvas) 的源码学习。
