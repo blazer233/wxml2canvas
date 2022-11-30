@@ -470,6 +470,7 @@ export const getTextSingleLine = (
 
 以上就是实现简单 `wxml2canvas` 的全部步骤，通过 `块级元素` 和 `行内元素` 的拆分可以将目标元素转为指定的 `canvas` ，从而可以让使用者利用小程序的 `wx.canvasToTempFilePath` 将canvas对象转为图片最终让用户进行保存
 
+小程序代码片段：https://developers.weixin.qq.com/s/ilKgT9mx7vEU
 完整代码：https://github.com/blazer233/wxml2canvas/tree/func/simple
 
 以上就是 npm 包 [wxml2canvas](https://github.com/wg-front/wxml2canvas) 的源码学习。
