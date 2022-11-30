@@ -2,10 +2,11 @@
 
 ![image.webp](https://raw.githubusercontent.com/blazer233/wxml2canvas/func/simple/title.png)
 
-> 项目代码：https://github.com/blazer233/wxml2canvas/tree/func/simple
->
->
 > 参考轮子：https://github.com/wg-front/wxml2canvas
+>
+> 小程序代码片段：https://developers.weixin.qq.com/s/ilKgT9mx7vEU
+>
+> 项目代码：https://github.com/blazer233/wxml2canvas/tree/func/simple
 
 
 我们经常会遇上动态生成海报的需求，而在小程序中，生成图片非Canvas莫属。但是在实际工作当中，为了追求效率，我们会不可避免地去使用一些JS插件，而 [`wxml-to-canvas`](https://github.com/wechat-miniprogram/wxml-to-canvas)  就是一款官方推荐且非常优秀的插件，它可以轻松地帮你将HTML代码转换成Canvas，进而生成可保存分享的图片。
