@@ -11,11 +11,10 @@ $RECYCLE.BIN/
 .Trashes
 
 # Node.js
-node_modules/
-miniprogram_npm/
-dist.js
+/node_modules
+/dist.js
 
 # IDE
 .idea
-project.private.config.json
-package-lock.json
+/project.private.config.json
+/package-lock.json
