@@ -1,27 +1,30 @@
 import { CACHE_INFO } from "../config";
-import { getLineHeight } from "../utils";
+import { calTxt, getLineHeight, transferNum } from "../utils";
 import { drawTextBackgroud, getTextSingleLine } from "./tools";
-import { measureWidth, drawText, setTxtAlign } from "../drawFun";
+import { measureWidth, setTxtAlign } from "../drawFun";
 
 /**
  * 绘制文字
- * @param { object } textData
- * @param { object } el
- * @param { function } resolve
- * @param { function } reject
- * @param { string } type
+ * @param { object } textData 节点位置
+ * @param { object } el 节点信息
+ * @param { string } type 渲染节点类型
+ * @param { function } resolve 成功时候抛出
+ * @param { function } reject 失败时候抛出
  */
-const DrawTxt = (textData, el, resolve, reject, type = "text") => {
-  const { ctx } = CACHE_INFO;
+const DrawTxt = (textData, el, type, resolve, reject) => {
+  const { ctx, options } = CACHE_INFO;
   let leftOffset = 0;
   let topOffset = 0;
   try {
-    drawText(el);
+    el.fontSize = transferNum(el.fontSize);
+    const fontSize = Math.ceil(el.fontSize || options.FONT_SIZE);
+    ctx.setTextBaseline("top");
+    ctx.font = calTxt(el, fontSize);
+    ctx.setFillStyle(el.color || options.FONT_COL);
     let text = textData.text || "";
     let textWidth = measureWidth(text, el.font || ctx.font);
     const lineHeight = getLineHeight(el);
-    const textHeight =
-      Math.ceil(textWidth / (el.width || textWidth)) * lineHeight;
+    const textHeight = Math.ceil(textWidth / (el.width || textWidth)) * lineHeight;
     let width = Math.ceil(el.width || textWidth);
     let x = 0;
     let y = 0;
@@ -29,7 +32,7 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
       drawTextBackgroud(textData, el, textWidth, textHeight);
     }
     // 行内文本
-    if (type === "inline-text") {
+    if (type === "inline") {
       const maxw = textData.maxWidth;
       // 如果上一个行内元素换行了，这个元素要继续在后面补足一行
       if (textData.leftOffset + textWidth > maxw) {
@@ -100,7 +103,7 @@ const DrawTxt = (textData, el, resolve, reject, type = "text") => {
       };
     }
   } catch (e) {
-    reject && reject({ errcode: 1004, errmsg: "drawText error", e });
+    reject && reject(e);
   }
 };
 export default DrawTxt;

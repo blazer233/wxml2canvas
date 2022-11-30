@@ -1,5 +1,5 @@
 import { CACHE_INFO } from "./config";
-import { calTxt, tNum, getLineHeight } from "./utils";
+import { calTxt, transferNum, getLineHeight } from "./utils";
 
 export const measureWidth = (text, font) => {
   const { ctx } = CACHE_INFO;
@@ -22,7 +22,7 @@ export const setTxtAlign = (textData, el, textWidth, maxWidth, line = 0) => {
   const fontSize = Math.ceil(el.fontSize || options.FONT_SIZE);
 
   const blockLineHeightFix =
-    ((el.dataset && el.dataset.type) || "").indexOf("inline") > -1
+    el.dataset && el.dataset.type.indexOf("inline") > -1
       ? 0
       : (lineHeight - fontSize) / 2;
   const top = el.padding ? el.padding[0] || 0 : 0;
@@ -35,19 +35,6 @@ export const setTxtAlign = (textData, el, textWidth, maxWidth, line = 0) => {
   // x：x + 左边距
   // y：y + lineheight偏移 + 行数 + paddingTop
   return [x + left, textData.y + blockLineHeightFix + line * lineHeight + top];
-};
-
-/**
- * 通过样式绘制文字
- * @param {*} el
- */
-export const drawText = el => {
-  const { ctx, options } = CACHE_INFO;
-  el.fontSize = tNum(el.fontSize);
-  const fontSize = Math.ceil(el.fontSize || options.FONT_SIZE);
-  ctx.setTextBaseline("top");
-  ctx.font = calTxt(el, fontSize);
-  ctx.setFillStyle(el.color || options.FONT_COL);
 };
 
 export const drawRectToCanvas = (x, y, width, height, el) => {

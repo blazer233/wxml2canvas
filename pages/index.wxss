@@ -63,7 +63,7 @@
     box-sizing: border-box;
 }
 
-.-inline {
+.-line {
     display: inline;
     vertical-align: middle;
     line-height: 50rpx;

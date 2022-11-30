@@ -12,7 +12,6 @@ Page({
   async init() {
     const res = await wxml2Canvas({
       element: "over-canvas",
-      background: "#f0f0f0",
       options: {
         class: ".exc-c",
         limit: ".limit-r",

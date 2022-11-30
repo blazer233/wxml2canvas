@@ -1,14 +1,14 @@
 <view class="share">
   <view class="content">Wxml:</view>
   <view class="-box limit-r">
-    <view class="-inline exc-c" data-type="inline-text" data-text="这是行内文字">这是行内文字</view>
-    <view class="-inline -blue exc-c" data-type="inline-text" data-text="这是蓝色行内文字试试">
+    <view class="-line exc-c" data-type="inline-text" data-text="这是{{txt}}">这是{{txt}}</view>
+    <view class="-line -blue exc-c" data-type="inline-text" data-text="这是蓝色行内文字试试">
       这是蓝色行内文字试试
     </view>
-    <view class="-inline exc-c" data-type="inline-text" data-text="这是换行的行内行内行内行内行内行内行内行内行内行行内行内内文字">
+    <view class="-line exc-c" data-type="inline-text" data-text="这是换行的行内行内行内行内行内行内行内行内行内行行内行内内文字">
       这是换行的行内行内行内行内行内行行内行内内行内行内行内行内文字
     </view>
-    <view class="-inline -red exc-c" data-type="inline-text" data-text="这是红色行内红色行内红色行内红色行内文字试试">
+    <view class="-line -red exc-c" data-type="inline-text" data-text="这是红色行内红色行内红色行内红色行内文字试试">
       这是红色行内红色行内红色行内红色行内文字试试
     </view>
     <view class="-il exc-c" data-type="text" data-text="这是无边距文字">这是无边距文字</view>

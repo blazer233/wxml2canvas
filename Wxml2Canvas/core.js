@@ -1,16 +1,6 @@
-import { drawRectToCanvas } from "./drawFun";
 import { CACHE_INFO } from "./config";
 import drawText from "./draw/text";
-import { transferPadding, tNum } from "./utils";
-
-export const setBaseInfo = () => {
-  const { ctx, options } = CACHE_INFO;
-  const { background, font, width, height } = options;
-  ctx.font = font;
-  ctx.setTextBaseline("top");
-  ctx.setStrokeStyle("white");
-  drawRectToCanvas(0, 0, width, height, { fill: background });
-};
+import { transferPadding, transferNum } from "./utils";
 
 /**
  *
@@ -42,7 +32,7 @@ export const drawWxmlBlock = (block = []) => {
     el =>
       new Promise((resolve, reject) => {
         const textData = drawAfter(el);
-        drawText(textData, el, resolve, reject, "text");
+        drawText(textData, el, "text", resolve, reject);
       })
   );
 };
@@ -68,7 +58,7 @@ export const drawWxmlInline = (inline = {}) => {
     Object.keys(inline).forEach(top => {
       inline[top].forEach(el => {
         const textData = drawAfter(el, leftOffset, maxWidth);
-        const drawRes = drawText(textData, el, null, null, "inline-text");
+        const drawRes = drawText(textData, el, "inline");
         leftOffset = drawRes.leftOffset; // 每次绘制从上次结束地方开始
       });
     });
@@ -85,34 +75,15 @@ export const drawWxmlInline = (inline = {}) => {
  * @returns 返回canvas位置
  */
 const drawAfter = (el, leftOffset, maxWidth) => {
-  transferWxmlStyle(el);
-  const text = el.dataset.text || "";
-  el.background = el.dataset.background || el.backgroundColor;
-  return {
-    text,
-    x: leftOffset || el.left,
-    y: el.top,
-    originX: el.left,
-    ...(leftOffset && { leftOffset }),
-    ...(maxWidth && { maxWidth }),
-  };
-};
-
-/**
- * 从节点解析出 padding
- *
- * @param {object} el 节点元素
- */
-export const transferWxmlStyle = el => {
   const { options } = CACHE_INFO;
   const { left: limitLeft = 0, top: limitTop = 0 } = options.limit;
   const leftFix = +el.dataset.left || 0;
   const topFix = +el.dataset.top || 0;
 
-  el.width = tNum(el.width);
-  el.height = tNum(el.height);
-  el.left = tNum(el.left) - limitLeft + leftFix;
-  el.top = tNum(el.top) - limitTop + topFix;
+  el.width = transferNum(el.width);
+  el.height = transferNum(el.height);
+  el.left = transferNum(el.left) - limitLeft + leftFix;
+  el.top = transferNum(el.top) - limitTop + topFix;
 
   let padding = el.dataset.padding || options.PADDING;
   if (typeof padding === "string") {
@@ -123,4 +94,14 @@ export const transferWxmlStyle = el => {
   const paddingBottom = +el.paddingBottom.replace("px", "") + +padding[2];
   const paddingLeft = +el.paddingLeft.replace("px", "") + +padding[3];
   el.padding = [paddingTop, paddingRight, paddingBottom, paddingLeft];
+  const text = el.dataset.text || "";
+  el.background = el.dataset.background || el.backgroundColor;
+  return {
+    text,
+    x: leftOffset || el.left,
+    y: el.top,
+    originX: el.left,
+    ...(leftOffset && { leftOffset }),
+    ...(maxWidth && { maxWidth }),
+  };
 };

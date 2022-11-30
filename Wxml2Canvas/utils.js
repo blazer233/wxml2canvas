@@ -1,6 +1,6 @@
 import { CACHE_INFO, COMPUT_STYLE } from "./config";
 
-export const tNum = number =>
+export const transferNum = number =>
   isNaN(number) ? +(number || "").replace("px", "") : number;
 
 export const getLineHeight = style => {
@@ -30,9 +30,9 @@ export const calTxt = (style, fontSize) =>
 
 export const getWxml = item => {
   const { options } = CACHE_INFO;
-  const { obj, width } = options;
-  const query = obj
-    ? wx.createSelectorQuery().in(obj)
+  const { _this, width } = options;
+  const query = _this
+    ? wx.createSelectorQuery().in(_this)
     : wx.createSelectorQuery();
   const render = new Promise(resolve => {
     query
